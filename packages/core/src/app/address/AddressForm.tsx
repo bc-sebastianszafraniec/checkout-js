@@ -77,6 +77,7 @@ class AddressForm extends Component<AddressFormProps & WithLanguageProps> {
         });
 
     componentDidMount(): void {
+        console.log("didMount")
         const { current } = this.containerRef;
 
         if (current) {
