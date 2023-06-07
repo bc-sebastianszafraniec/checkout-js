@@ -131,6 +131,12 @@ $buttonWidthMap: (
             margin-top: 0;
             width: 100%;
         }
+
+        #amazonpayCheckoutButton {
+            .amazonpay-button-container div {
+                height: 36px;
+            }
+        }
     }
 
     #applepayCheckoutButton button,
