@@ -22,22 +22,9 @@ const beautifyAmazonButton = ():void => {
     }
 
     const container = document.querySelector('#amazonpayCheckoutButton > div') as unknown as HTMLElement;
-    const tagline = container?.shadowRoot?.querySelector('.amazonpay-button-view3');
+    if (!container) return;
 
-    if (container) {
-        container.style.visibility = 'hidden';
-        container.style.width = '100%';
-    }
-
-    if (tagline) {
-        tagline.remove();
-        (container?.shadowRoot?.querySelector('.amazonpay-button-view1') as unknown as HTMLElement).style.height = '36px'
-        container?.shadowRoot?.querySelector('.amazonpay-button-view2')?.remove();
-        container?.shadowRoot?.querySelector('.amazonpay-button-chevrons')?.remove();
-        container.style.visibility = 'visible';
-
-        return;
-    }
+    (container?.shadowRoot?.querySelector('.amazonpay-button-view1') as unknown as HTMLElement).style.height = '36px'
 
     setTimeout(beautifyAmazonButton, 100);
 }
