@@ -2,17 +2,18 @@ import { CustomerInitializeOptions, CustomerRequestOptions } from '@bigcommerce/
 import { FieldProps, FormikProps, withFormik } from 'formik';
 import React, { FunctionComponent, memo, ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { TranslatedString } from '@bigcommerce/checkout/locale';
+import { TranslatedString, WithLanguageProps, withLanguage } from '@bigcommerce/checkout/locale';
 import { CustomerSkeleton } from '@bigcommerce/checkout/ui';
 
 import CheckoutStepStatus from '../checkout/CheckoutStepStatus';
 import { getAppliedStyles } from '../common/dom';
-import { PrivacyPolicyField } from '../privacyPolicy';
+import { PrivacyPolicyField, getPrivacyPolicyValidationSchema } from '../privacyPolicy';
 import { Button, ButtonVariant } from '../ui/button';
 import { BasicFormField, Fieldset, Legend } from '../ui/form';
 
 import { GuestFormValues } from './GuestForm';
 import SubscribeField from './SubscribeField';
+import { object, string } from 'yup';
 
 export interface StripeGuestFormProps {
     canSubscribe: boolean;
@@ -63,7 +64,7 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
         setContinueAsAGuestButton(!email);
         setAuthentication(authenticated);
 
-        if(!authenticated){
+        if (!authenticated) {
             setIsNewAuth(true);
         }
     }, [setContinueAsAGuestButton, onChangeEmail]);
@@ -85,7 +86,7 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
     };
 
     const stripeInitialize = () => {
-        initialize( {
+        initialize({
             methodId: 'stripeupe',
             stripeupe: {
                 container: 'stripeupeLink',
@@ -95,7 +96,8 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
                 gatewayId: 'stripeupe',
                 methodId: 'card',
             },
-        })};
+        })
+    };
 
     useEffect(() => {
         stripeInitialize();
@@ -112,13 +114,13 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
             return getAppliedStyles(parentContainer, properties);
         }
 
-            return undefined;
+        return undefined;
 
     };
 
     const containerId = 'stripe-card-component-field';
 
-    const getStripeStyles: () => (Record<string, string> | undefined) = useCallback( () => {
+    const getStripeStyles: () => (Record<string, string> | undefined) = useCallback(() => {
         const formInput = getStylesFromElement(`${containerId}--input`, ['color', 'background-color', 'border-color', 'box-shadow']);
         const formLabel = getStylesFromElement(`${containerId}--label`, ['color']);
         const formError = getStylesFromElement(`${containerId}--error`, ['color']);
@@ -138,7 +140,7 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
         return (
             <div
                 className="optimizedCheckout-form-input"
-                id={ `${containerId}--input` }
+                id={`${containerId}--input`}
                 placeholder="1111"
             >
                 <div
@@ -146,12 +148,12 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
                 >
                     <div
                         className="optimizedCheckout-form-label"
-                        id={ `${containerId}--error` }
+                        id={`${containerId}--error`}
                     />
                 </div>
                 <div
                     className="optimizedCheckout-form-label"
-                    id={ `${containerId}--label` }
+                    id={`${containerId}--label`}
                 />
             </div>
         );
@@ -159,87 +161,108 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
 
     const renderField = useCallback((fieldProps: FieldProps<boolean>) => (
         <SubscribeField
-            { ...fieldProps }
-            requiresMarketingConsent={ requiresMarketingConsent }
+            {...fieldProps}
+            requiresMarketingConsent={requiresMarketingConsent}
         />
     ), [
         requiresMarketingConsent,
     ]);
 
-    const buttonText = authentication && !isNewAuth? 'customer.continue_as_stripe_customer_action' : continueAsGuestButtonLabelId;
+    const buttonText = authentication && !isNewAuth ? 'customer.continue_as_stripe_customer_action' : continueAsGuestButtonLabelId;
 
     return (
         <>
-            <CustomerSkeleton isLoading={isStripeLoading}/>
-            <div className="checkout-form" style={ {display: isStripeLoading ? 'none' : undefined} }>
-                    <Fieldset
-                        legend={ !authentication &&
-                            <Legend hidden>
-                                <TranslatedString id="customer.guest_customer_text"/>
-                            </Legend>
-                        }
-                    >
-                        <div className="customerEmail-container">
-                            <div className="customerEmail-body">
-                                <div id="stripeupeLink"/>
-                                <br/>
-                                { (canSubscribe || requiresMarketingConsent) && <BasicFormField
-                                    name="shouldSubscribe"
-                                    render={ renderField }
-                                /> }
+            <CustomerSkeleton isLoading={isStripeLoading} />
+            <div className="checkout-form" style={{ display: isStripeLoading ? 'none' : undefined }}>
+                <Fieldset
+                    legend={!authentication &&
+                        <Legend hidden>
+                            <TranslatedString id="customer.guest_customer_text" />
+                        </Legend>
+                    }
+                >
+                    <div className="customerEmail-container">
+                        <div className="customerEmail-body">
+                            <div id="stripeupeLink" />
+                            <br />
+                            {(canSubscribe || requiresMarketingConsent) && <BasicFormField
+                                name="shouldSubscribe"
+                                render={renderField}
+                            />}
 
-                                { privacyPolicyUrl && <PrivacyPolicyField
-                                    url={ privacyPolicyUrl }
-                                /> }
-                            </div>
-
-                            <div className="form-actions customerEmail-action">
-                                { (!authentication || (authentication && !isNewAuth )) && <Button
-                                    className="stripeCustomerEmail-button"
-                                    disabled={ continueAsAGuestButton }
-                                    id="stripe-checkout-customer-continue"
-                                    isLoading={ isLoading }
-                                    onClick={ handleOnClickSubmitButton }
-                                    testId="stripe-customer-continue-as-guest-button"
-                                    type="submit"
-                                    variant={ ButtonVariant.Primary }
-                                >
-                                    <TranslatedString id={ buttonText }/>
-                                </Button> }
-                            </div>
+                            {privacyPolicyUrl && <PrivacyPolicyField
+                                url={privacyPolicyUrl}
+                            />}
                         </div>
-                        {
-                            !isLoading && <p>
-                                <TranslatedString id="customer.login_text"/>
-                                { ' ' }
-                                <a
-                                    data-test="customer-continue-button"
-                                    id="checkout-customer-login"
-                                    onClick={ onShowLogin }
-                                >
-                                    <TranslatedString id="customer.login_action"/>
-                                </a>
-                            </p>
-                        }
-                        { !authentication && checkoutButtons }
-                    </Fieldset>
+
+                        <div className="form-actions customerEmail-action">
+                            {(!authentication || (authentication && !isNewAuth)) && <Button
+                                className="stripeCustomerEmail-button"
+                                disabled={continueAsAGuestButton}
+                                id="stripe-checkout-customer-continue"
+                                isLoading={isLoading}
+                                onClick={handleOnClickSubmitButton}
+                                testId="stripe-customer-continue-as-guest-button"
+                                type="submit"
+                                variant={ButtonVariant.Primary}
+                            >
+                                <TranslatedString id={buttonText} />
+                            </Button>}
+                        </div>
+                    </div>
+                    {
+                        !isLoading && <p>
+                            <TranslatedString id="customer.login_text" />
+                            {' '}
+                            <a
+                                data-test="customer-continue-button"
+                                id="checkout-customer-login"
+                                onClick={onShowLogin}
+                            >
+                                <TranslatedString id="customer.login_action" />
+                            </a>
+                        </p>
+                    }
+                    {!authentication && checkoutButtons}
+                </Fieldset>
             </div>
-            { renderCheckoutThemeStylesForStripeUPE() }
+            {renderCheckoutThemeStylesForStripeUPE()}
         </>
     );
 };
 
-export default withFormik<StripeGuestFormProps, GuestFormValues>({
-    mapPropsToValues: ({
-                           email = '',
-                           defaultShouldSubscribe = false,
-                           requiresMarketingConsent,
-                       }) => ({
-        email,
-        shouldSubscribe: requiresMarketingConsent ? false : defaultShouldSubscribe,
-        privacyPolicy: false,
-    }),
-    handleSubmit: (values, { props: { onContinueAsGuest } }) => {
-        onContinueAsGuest(values);
-    },
-})(memo(StripeGuestForm));
+export default withLanguage(
+    withFormik<StripeGuestFormProps & WithLanguageProps, GuestFormValues>({
+        mapPropsToValues: ({
+            email = '',
+            defaultShouldSubscribe = false,
+            requiresMarketingConsent,
+        }) => ({
+            email,
+            shouldSubscribe: requiresMarketingConsent ? false : defaultShouldSubscribe,
+            privacyPolicy: false,
+        }),
+        handleSubmit: (values, { props: { onContinueAsGuest } }) => {
+            onContinueAsGuest(values);
+        },
+        validationSchema: ({ language, privacyPolicyUrl }: StripeGuestFormProps & WithLanguageProps) => {
+            const email = string()
+                .email(language.translate('customer.email_invalid_error'))
+                .max(256)
+                .required(language.translate('customer.email_required_error'));
+
+            const baseSchema = object({ email });
+
+            if (privacyPolicyUrl) {
+                return baseSchema.concat(
+                    getPrivacyPolicyValidationSchema({
+                        isRequired: !!privacyPolicyUrl,
+                        language,
+                    }),
+                );
+            }
+
+            return baseSchema;
+        },
+    })(memo(StripeGuestForm)),
+)
