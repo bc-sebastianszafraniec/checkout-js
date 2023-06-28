@@ -58,6 +58,7 @@ const StripeGuestForm: FunctionComponent<StripeGuestFormProps & FormikProps<Gues
         });
     };
     const setEmailCallback = useCallback((authenticated: boolean, email: string) => {
+        console.log("xxx1")
         onChangeEmail(email);
         setEmailValue(email);
         setContinueAsAGuestButton(!email);
