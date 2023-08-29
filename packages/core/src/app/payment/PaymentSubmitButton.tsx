@@ -147,9 +147,9 @@ interface WithCheckoutPaymentSubmitButtonProps {
 const PaymentSubmitButton: FunctionComponent<
     PaymentSubmitButtonProps & WithCheckoutPaymentSubmitButtonProps
 > = ({
-    isDisabled,
-    isInitializing,
-    isSubmitting,
+    // isDisabled,
+    // isInitializing,
+    // isSubmitting,
     isPaymentDataRequired,
     methodGateway,
     methodId,
@@ -166,10 +166,10 @@ const PaymentSubmitButton: FunctionComponent<
                 : undefined
         }
         data-test="payment-submit-button"
-        disabled={isInitializing || isSubmitting || isDisabled}
+        // disabled={isInitializing || isSubmitting || isDisabled}
         id="checkout-payment-continue"
         isFullWidth
-        isLoading={isSubmitting}
+        isLoading={false}
         size={ButtonSize.Large}
         type="submit"
         variant={ButtonVariant.Action}
