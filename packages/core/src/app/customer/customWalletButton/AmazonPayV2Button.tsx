@@ -3,9 +3,10 @@ import React, { FunctionComponent, useEffect } from 'react';
 import CheckoutButton, { CheckoutButtonProps } from '../CheckoutButton';
 
 const AmazonPayV2Button: FunctionComponent<CheckoutButtonProps> = (props) => {
+
     useEffect(() => {
         beautifyAmazonButton();
-    }, []);
+    }, [props]);
 
     return (
         <div className="AmazonPayContainer">
@@ -26,8 +27,10 @@ const beautifyAmazonButton = (): void => {
 
     if (container && amazonButton) {
         amazonButton.style.height = '36px';
+        container.style.width = '100%';
+
         return;
     }
 
-    setTimeout(beautifyAmazonButton, 10);
+    setTimeout(beautifyAmazonButton, 50);
 }
