@@ -21,14 +21,14 @@ export type StripePaymentMethodProps = Omit<HostedWidgetPaymentMethodProps, 'con
 interface WithCheckoutStripePaymentMethodProps {
     storeUrl: string;
     isGuest: boolean;
-    isStripeLinkAuthenticated: boolean | undefined;
+    paymentProviderAuthenticationState: boolean;
 }
 
 const StripeUPEPaymentMethod: FunctionComponent<
     StripePaymentMethodProps &
         WithInjectedHostedCreditCardFieldsetProps &
         WithCheckoutStripePaymentMethodProps
-> = ({ initializePayment, method, storeUrl, isGuest, isStripeLinkAuthenticated,  onUnhandledError = noop, ...rest }) => {
+> = ({ initializePayment, method, storeUrl, isGuest, paymentProviderAuthenticationState,  onUnhandledError = noop, ...rest }) => {
     const containerId = `stripe-${method.id}-component-field`;
 
     const paymentContext = useContext(PaymentContext);
@@ -100,7 +100,7 @@ const StripeUPEPaymentMethod: FunctionComponent<
     };
 
     const shouldSavingCardsBeEnabled = (): boolean => {
-        if (!isGuest && isStripeLinkAuthenticated) {
+        if (!isGuest && paymentProviderAuthenticationState) {
             return false;
         } 
 
@@ -124,19 +124,22 @@ const StripeUPEPaymentMethod: FunctionComponent<
 
 function mapFromCheckoutProps({ checkoutState }: CheckoutContextProps ) {
     const {
-        data: { getConfig, getCustomer },
+        data: { getConfig, getCustomer, getPaymentProviderCustomer },
     } = checkoutState;
     const config = getConfig();
     const customer = getCustomer();
+    const paymentProviderAuthenticationState = getPaymentProviderCustomer();
 
     if (!config || !customer) {
         return null;
     }
 
+    const authenticationState = typeof paymentProviderAuthenticationState?.authenticationState === 'boolean' ? paymentProviderAuthenticationState?.authenticationState : false
+
     return {
         storeUrl: config.links.siteLink,
         isGuest: customer.isGuest,
-        isStripeLinkAuthenticated: customer.isStripeLinkAuthenticated,
+        paymentProviderAuthenticationState: authenticationState,
     };
 }
 
