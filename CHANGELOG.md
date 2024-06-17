@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.494.5-prerelease.1718639822347](https://github.com/bigcommerce/checkout-js/compare/v1.494.5-prerelease.1718637396239...v1.494.5-prerelease.1718639822347) (2024-06-17)
+
+
+### Features
+
+* **payment:** PI-2177 Pay with Amazon Button display issues at checkout ([3916299](https://github.com/bigcommerce/checkout-js/commit/391629964a56d1e36c756e62b72caadf72407991))
+
 ### [1.494.5-prerelease.1718637396239](https://github.com/bigcommerce/checkout-js/compare/v1.464.2...v1.494.5-prerelease.1718637396239) (2024-06-17)
 
 
