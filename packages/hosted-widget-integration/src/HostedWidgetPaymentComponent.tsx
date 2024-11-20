@@ -266,13 +266,13 @@ class HostedWidgetPaymentComponent extends Component<
 
                     {this.renderContainer(shouldShowCreditCardFieldset)}
 
-                    {isInstrumentFeatureAvailableProp && (
+                    {/* {isInstrumentFeatureAvailableProp && ( */}
                         <StoreInstrumentFieldset
                             instrumentId={selectedInstrumentId}
                             instruments={instruments}
                             isAccountInstrument={isAccountInstrument || shouldShowAccountInstrument}
                         />
-                    )}
+                    {/* )} */}
 
                     {this.renderEditButtonIfAvailable()}
                 </div>
